@@ -16,8 +16,8 @@
       shell: "{{ ssh_known_hosts_command}} {{ item.item }} >> {{ ssh_known_hosts_file }}"
       with_items: "{{ ssh_known_host_results.results }}"
       when: item.stdout == ""
-    
-      vars: 
+
+      vars:
         ssh_known_hosts_command: "ssh-keyscan -H -T 10"
         ssh_known_hosts_file: "/etc/ssh/ssh_known_hosts"
         ssh_known_hosts:
@@ -34,5 +34,4 @@
 #     register: keyscan
 #   - lineinfile: name=~/.ssh/known_hosts create=yes line={{ item }}
 #     with_items: '{{ keyscan.results | map(attribute='stdout_lines') | list }}'
-    
- 
+
