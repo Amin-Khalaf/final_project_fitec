@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby sw=2 st=2 et :
+
+# Maintainer : Ana SCHNEIDER ing.anacs@gmail.com
+# We will create 5 servers :
+# s0.infra, s1.infra ... s4.infra
+#
+# Use debian buster for our servers
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/buster64"
+  config.vm.box_check_update = false
+
+  # Limit memory of our servers
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1200"
+    vb.gui = false
+    vb.cpus = 1
+  end
+#VBoxManage modifyvm  "NameOfVM" --natnet1 "192.168/16" 
+  # Create a  cache for APT
+  # config.vm.synced_folder 'v-cache', '/var/cache/apt'
+  # Create s0.infra with intranet (eth1) and internet (eth0)
+  config.vm.define 'control' do |machine|
+    machine.vm.hostname = 'control'
+    machine.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ['.*']
+    machine.vm.network "private_network", bridge: "eth0", ip: "192.168.50.200"
+  end
+
+  # Create our servers (0 to 4) 
+  2.times do |idx|
+    config.vm.define "s#{idx}.infra" do |machine|
+      machine.vm.hostname = "s#{idx}.infra"
+      #machine.vm.synced_folder ".", "/vagrant", disabled: true
+      machine.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: ['.*', 'part1_rsa', 'provision_by_control']
+      if idx == 0
+        machine.vm.network "private_network", ip: "192.168.50.#{idx * 10 + 10}"
+        machine.vm.network "forwarded_port", guest: 80, host: 80
+        machine.vm.network "forwarded_port", guest: 8080, host: 8080
+      else
+        #machine.vm.network "private_network", bridge: "eth0", ip: "192.168.50.#{idx * 10 + 10}"
+        machine.vm.network "private_network", ip: "192.168.50.#{idx * 10 + 10}"#, auto_config: false
+      end
+
+    end
+  end
+
+  config.vm.provision "shell", path: "provision.sh"
+end
+
+
