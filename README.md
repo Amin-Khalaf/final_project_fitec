@@ -1,7 +1,7 @@
 # Clone the master branch on your computer:
 Copy the master branch on your computer, in the directory you choose.
 
-`git clone https://github.com/schneiderana/final_project.git -b master`
+`git clone https://github.com/Amin-Khalaf/final_project_fitec.git`
 
 # Generate a ssh-key:
 Generate a ssh-key named **part1_rsa** with the following command, inside the directoruy **part1**.
