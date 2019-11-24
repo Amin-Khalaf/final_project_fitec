@@ -64,10 +64,6 @@ cat /vagrant/part1_rsa.pub >> /root/.ssh/authorized_keys
 sort -u /root/.ssh/authorized_keys > /root/.ssh/authorized_keys.tmp
 mv /root/.ssh/authorized_keys.tmp /root/.ssh/authorized_keys
 
-# if [ "$HOSTNAME" = "control" ]; then
-# 	ssh-keyscan s{0,1,2,3,4}.infra >> .ssh/know_hosts
-# fi
-
 # Je corrige les permissions
 touch /root/.ssh/config
 chmod 0600 /root/.ssh/*

@@ -1,0 +1,211 @@
+---
+# working on s0.infra 
+# install DNSmasq and HAProxy
+- hosts: s0.infra
+  tasks:
+    - name: install DNSmasq
+      apt:
+        name: ['dnsmasq']
+        state: present
+    - name: update cache haproxy
+      apt: 
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: install haproxy
+      apt:
+        name: haproxy
+        state: present
+#    - name: restart haproxy
+#      service: 
+#        name: haproxy
+#        state: started
+
+    - name: Enable init script
+      replace: 
+        dest: '/etc/default/haproxy'
+        regexp: 'ENABLED=0'
+        replace: 'ENABLED=1'
+
+    - name: configure HAProxy
+      template:
+        src: templates/haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+        owner: vagrant
+        group: vagrant
+
+# working on s1 and s2.infra (web)
+# install Apache, PHP and nfs-client
+- hosts: web
+  tasks:
+    - name: install apache and php
+      apt:
+        name: ['apache2', 'php7.3', 'nfs-common']
+        state: present
+# mount our nfs
+    - name: ensure /mnt/nfs exists
+      file:
+        path: /mnt/nfs
+        state: directory
+    - name: mount /mt/nfs
+      mount:
+        path: /mnt/nfs
+        src: s4.infra:/home/data/
+        fstype: 'nfs'
+        opts: 'defaults,user,auto,noatime,bg'
+        state: present
+
+# download wordpress
+    - name: Download WordPress
+      get_url:
+        url: 'https://fr.wordpress.org/latest-fr_FR.tar.gz'
+        dest: '/usr/src/wordpress.tar.gz'
+
+# extract wordpress
+    - name: ensure wordpress exists
+      file:
+        path: /usr/src/wordpress
+        state: directory
+
+    - name: Extract WordPress
+      unarchive:
+        src: '/usr/src/wordpress.tar.gz'
+        dest: '/usr/src/wordpress/'
+        remote_src: 'yes'
+        extra_opts:
+          - --strip-components=1
+
+# configure php and apache2
+    - name: create a directory for virtual hosts data
+      file:
+        path: "/var/www/{{ item.dns }}"
+        state: directory
+      with_items: "{{ apache_virtual_hosts }}"
+
+    - name: sync with rsync
+      synchronize:
+        src: /usr/src/wordpress/
+        dest: "/var/www/{{ item.dns }}/"
+      with_items: "{{ apache_virtual_hosts }}"  
+      delegate_to: "{{ inventory_hostname }}"
+
+    - name: ensure correct permissions
+      file:
+        path: "/var/www/{{ item.dns }}/"
+        owner: www-data
+        group: www-data
+      with_items: "{{ apache_virtual_hosts }}"
+
+    - name: create virtual hosts configuration
+      template:
+        src: etc.apache2.sites-available.item.conf.j2
+        dest: "/etc/apache2/sites-available/{{ item.dns }}.conf"
+      with_items: "{{ apache_virtual_hosts }}"
+
+    - name: Enable site
+      command: "a2ensite {{ item.dns }}"
+      with_items: "{{ apache_virtual_hosts }}"
+
+    - name: Restart apache
+      service:
+        name: apache2
+        state: restarted
+
+# install mariadb-client
+    - name: install mariadb
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+          - mariadb-client
+          - mariadb-common
+
+# working on s3.infra (db)
+# install and configure MariaDB
+- hosts: db
+  tasks:
+    - name: Install the Python dependencies 
+      apt:
+        name: python-mysqldb
+        state: present
+
+    - name: install mariadb
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+          - mariadb-client
+          - mariadb-common
+          - mariadb-server
+
+    - name: Create Mariadb directories
+      file: 
+        path: /data/{{item}}
+        state: directory
+        owner: mysql
+        group: mysql
+        recurse: yes
+      with_items:
+        - db
+        - log
+
+    - name: Write new configuration file
+      template:
+        src: templates/mysql/my.cnf.j2
+        dest: /etc/mysql/my.cnf
+        owner: mysql
+        group: mysql
+        mode: '0600'
+        remote_src: 'no'
+
+    - name: Ensure Mariadb start
+      service: 
+        name: mysql
+        state: started
+        enabled: true
+      tags: mariadb
+
+    - name: Create MariaDB databse with name 'mabase'
+      mysql_db:
+        name: mabase
+        state: present
+    
+    - name: Create MariDB username and password
+      mysql_user: 
+        name: admin
+        host: "{{ item }}"
+        password: aaaf1234
+        priv: '*.*:ALL'
+        state: present
+      with_items:
+        - '127.0.0.1'
+        - '%'
+
+# install and configure nfs-server (s4.infra)
+- hosts: nfs
+  tasks:
+    - name: install nfs on s4
+      apt:
+        name: ['nfs-kernel-server', 'nfs-common']
+        state: present
+# create /home/data
+    - name: ensure mountable dir exists
+      file:
+        path: /home/data
+        mode: 777
+        owner: root
+        group: root
+        state: directory
+# copy /etc/exports
+    - name: copy /etc/exports
+      template:
+        src: exports.j2
+        dest: /etc/exports
+        owner: root
+        group: root
+# restart NFS server
+    - name: restart NFS
+      service:
+        name: 'nfs-kernel-server'
+        state: restarted
+
