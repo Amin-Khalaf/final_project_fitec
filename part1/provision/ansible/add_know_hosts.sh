@@ -12,7 +12,6 @@ export DEBIAN_FRONTEND=noninteractive
 # cp -R $SYNC_FOLDER/src/ $VAGRANT_HOME/ || :
 # chown -R vagrant:vagrant $VAGRANT_HOME/src/
 
-cd /vagrant/provision_by_control/ansible_src
-su vagrant -c "ansible-playbook -i inventories/inventories ssh_keyscan.yml"
-
+cd /vagrant/provision/ansible/src
+su vagrant -c "ansible-playbook -i inventories/inventories ssh_fingerprints.yml"
 echo "[SUCCESS] Ansible play: $HOSTNAME."
