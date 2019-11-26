@@ -1,1 +1,1 @@
-{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"C:/Users/amink/Desktop/final_project_fitec/part1","disabled":false,"rsync__exclude":[".*"],"__vagrantfile":true,"exclude":[".*"],"owner":"vagrant","group":"vagrant"}}}
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"C:/Users/Fitec/Desktop/project/final_project_fitec/final_project_fitec/part1","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
