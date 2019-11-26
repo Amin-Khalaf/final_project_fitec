@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
 
     machine.vm.provision "shell", path: "provision/shell/provision.sh"
     machine.vm.provision "shell", path: "provision/ansible/add_know_hosts.sh"
-    machine.vm.provision "shell", path: "provision/ansible/test_install_tmux.sh"
+    #machine.vm.provision "shell", path: "provision/ansible/test_install_tmux.sh"
     machine.vm.provision "shell", path: "provision/ansible/provision_all.sh"
 
   end
