@@ -1,5 +1,5 @@
 ---
-- hosts: all_srv
+- hosts: all
   tasks:
     - name: install tmux
       apt:

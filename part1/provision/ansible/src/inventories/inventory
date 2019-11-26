@@ -1,13 +1,19 @@
-[all_srv]
-control vagrant_user=root
 s0.infra ansible_user=root
 s1.infra ansible_user=root
 s2.infra ansible_user=root
 s3.infra ansible_user=root
 s4.infra ansible_user=root
+localhost ansible_user=vagrant ansible_connection=local
+
+[servers]
+s0.infra
+s1.infra
+s2.infra
+s3.infra
+s4.infra
 
 [ctrl]
-localhost ansible_connection=local
+localhost
 
 [web]
 s1.infra

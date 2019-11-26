@@ -23,18 +23,18 @@ if [ "$HOSTNAME" = "control" ]; then
 	apt-get install -y git vim dos2unix make ansible
 	
 	# delete all chars added by windows
-	find . -type f -print0 | xargs -0 dos2unix
+	find /vagrant -type f -exec dos2unix {} \;
 
 	# J'ajoute les deux clefs sur le noeud de controle
 	mkdir -p /root/.ssh
 	cp /vagrant/part1_rsa /home/vagrant/.ssh/part1_rsa
 	cp /vagrant/part1_rsa.pub /home/vagrant/.ssh/part1_rsa.pub
 
-cat > /home/vagrant/.ssh/config <<-MARK
-	Host s*.infra
+cat > /home/vagrant/.ssh/config <<MARK
+Host *.infra
 	User root
 	IdentityFile ~/.ssh/part1_rsa
-	StrictHostKeyChecking no
+#	StrictHostKeyChecking no
 MARK
 
 	chmod 0600 /home/vagrant/.ssh/*_rsa
@@ -43,12 +43,12 @@ MARK
 	sed -i \
 		-e '/## BEGIN PROVISION/,/## END PROVISION/d' \
 		/home/vagrant/.bashrc
-	cat >> /home/vagrant/.bashrc <<-MARK
-	## BEGIN PROVISION
-	eval \$(ssh-agent -s)
-	ssh-add ~/.ssh/*_rsa
-	## END PROVISION
-	MARK
+	cat >> /home/vagrant/.bashrc <<MARK
+## BEGIN PROVISION
+eval \$(ssh-agent -s)
+ssh-add ~/.ssh/*_rsa
+## END PROVISION
+MARK
 
 fi
 
