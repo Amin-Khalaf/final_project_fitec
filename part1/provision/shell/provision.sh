@@ -15,13 +15,15 @@ apt-get install -y \
     ca-certificates \
     curl \
     wget \
-	rsync \
     gnupg2 \
     python3 \
     software-properties-common
 
 if [ "$HOSTNAME" = "control" ]; then
-	apt-get install -y git make ansible
+	apt-get install -y git vim dos2unix make ansible
+	
+	# delete all chars added by windows
+	find . -type f -print0 | xargs -0 dos2unix
 
 	# J'ajoute les deux clefs sur le noeud de controle
 	mkdir -p /root/.ssh

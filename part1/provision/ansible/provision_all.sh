@@ -9,11 +9,10 @@ HOSTNAME="$(hostname)"
 export DEBIAN_FRONTEND=noninteractive
 
 # ansible-playbook play.yml --ssh-common-args='-o StrictHostKeyChecking=no'
-chown -R vagrant:vagrant /vagrant/provision/ansible/src
 cd /vagrant/provision/ansible/src
 #su vagrant -c "ansible-playbook -i inventories/inventories ssh_keyscan.yml"
 #su vagrant -c "ansible-playbook -i inventories/inventories ssh_fingerprints.yml"
-su vagrant -c "ansible-playbook -i inventories/inventory install.yml"
+ansible-playbook -i inventories/inventory install.yml
 #make ssh_connection
 #make all
 echo "[SUCCESS] Ansible play: $HOSTNAME."
