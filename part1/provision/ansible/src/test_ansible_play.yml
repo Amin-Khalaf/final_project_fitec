@@ -1,0 +1,9 @@
+---
+- hosts: all_srv
+  tasks:
+    - name: install tmux
+      apt:
+        name: ['tmux']
+        state: present
+
+

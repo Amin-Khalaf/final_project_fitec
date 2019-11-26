@@ -1,10 +1,11 @@
 ---
 # # ansible playbook that adds ssh fingerprints to known_hosts
 - hosts: control
-  gather_facts: no
+  gather_facts: false
+  become: true
   tasks:
   - name: Add fingerprints to known_hosts
-    local_action: shell ssk-keyscan -H {{ item }} >> ~/.ssh/know_hosts
+    command: ssk-keyscan -H {{ item }} >> ~/.ssh/know_hosts
     with_items:
     - s0.infra
     - s1.infra

@@ -27,7 +27,15 @@ if [ "$HOSTNAME" = "control" ]; then
 	mkdir -p /root/.ssh
 	cp /vagrant/part1_rsa /home/vagrant/.ssh/part1_rsa
 	cp /vagrant/part1_rsa.pub /home/vagrant/.ssh/part1_rsa.pub
-	chmod 0600 /home/vagrant/.ssh/*_rsa 
+
+cat > /home/vagrant/.ssh/config <<-MARK
+	Host s*.infra
+	User root
+	IdentityFile ~/.ssh/part1_rsa
+	StrictHostKeyChecking no
+MARK
+
+	chmod 0600 /home/vagrant/.ssh/*_rsa
 	chown -R vagrant:vagrant /home/vagrant/.ssh
 
 	sed -i \
