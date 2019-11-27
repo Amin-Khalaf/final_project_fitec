@@ -1,4 +1,0 @@
-ssh connection:
-https://stackoverflow.com/questions/23074412/how-to-set-host-key-checking-false-in-ansible-inventory-file
-
-https://www.vagrantup.com/docs/provisioning/ansible_local.html
