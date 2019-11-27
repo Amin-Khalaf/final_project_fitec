@@ -4,4 +4,4 @@ apache_virtual_hosts:
   - dns: devsecops.com
 
 server_id:
- - server-id=1
+  - server-id=1

@@ -50,6 +50,11 @@
         owner: vagrant
         group: vagrant
 
+#    - name: restart haproxy
+#      service:
+#        name: haproxy
+#        state: reloaded
+
 # working on s1 and s2.infra (web)
 # install Apache, PHP and nfs-client
 - hosts: web
@@ -148,7 +153,7 @@
 
     - name: Create Mariadb directories
       file: 
-        path: /data/{{item}}
+        path: /data/{{ item }}
         state: directory
         owner: mysql
         group: mysql
