@@ -34,7 +34,7 @@ cat > /home/vagrant/.ssh/config <<MARK
 Host *.infra
 	User root
 	IdentityFile ~/.ssh/part1_rsa
-#	StrictHostKeyChecking no
+	StrictHostKeyChecking no
 MARK
 
 	chmod 0600 /home/vagrant/.ssh/*_rsa
