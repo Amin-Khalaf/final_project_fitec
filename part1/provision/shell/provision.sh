@@ -15,6 +15,7 @@ apt-get install -y \
     ca-certificates \
     curl \
     wget \
+    rsync \
     gnupg2 \
     python3 \
     software-properties-common
