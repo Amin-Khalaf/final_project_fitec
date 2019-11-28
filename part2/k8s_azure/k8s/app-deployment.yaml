@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: app
+    spec:
+      containers:
+      - env:
+        - name: DOLI_DB_HOST
+          value: db
+        - name: DOLI_DB_NAME
+          value: dolibarr
+        - name: DOLI_DB_PASSWORD
+          value: dolibarr
+        - name: DOLI_DB_USER
+          value: dolibarr
+        image: schneidera/dolibarr:1.3
+        name: app
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/www/html/htdocs/conf
+          name: dolibarr-conf
+        - mountPath: /var/www/html/htdocs/documents
+          name: dolibarr-docs
+      restartPolicy: Always
+      volumes:
+      - name: dolibarr-conf
+        emptyDir: {}
+        #persistentVolumeClaim:
+        #  claimName: dolibarr-conf
+      - name: dolibarr-docs
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #  claimName: dolibarr-docs
+status: {}

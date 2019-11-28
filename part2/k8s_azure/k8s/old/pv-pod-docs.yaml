@@ -1,0 +1,9 @@
+iapiVersion: v1
+kind: Pod
+metadata:
+  name: dolibarr-docs-persistentvolumeclaim
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+        claimName: task-pv-claim
